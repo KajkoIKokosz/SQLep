@@ -1,0 +1,54 @@
+
+CREATE TABLE `Items` (
+	`id` INT NOT NULL,
+	`Item_name` VARCHAR(255) NOT NULL,
+	`Description` TEXT(1000),
+	`Price` FLOAT NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `Pictures` (
+	`id` INT NOT NULL,
+	`item_id` INT NOT NULL,
+	`src_path` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `Users` (
+	`id` INT NOT NULL,
+	`Name` VARCHAR(255) NOT NULL,
+	`Surname` VARCHAR(255) NOT NULL,
+	`email` VARCHAR(255) NOT NULL UNIQUE,
+	`shipping_adres` TEXT(500) NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `Cart` (
+	`id` INT NOT NULL,
+	`quantity` INT NOT NULL,
+	`user_id` INT NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `Cart_items` (
+	`id` BINARY NOT NULL,
+	`items_id` BINARY NOT NULL,
+	`cart_id` BINARY NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `Admins` (
+	`id` INT NOT NULL,
+	`email` VARCHAR(255) NOT NULL UNIQUE,
+	`password` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `Pictures` ADD CONSTRAINT `Pictures_fk0` FOREIGN KEY (`item_id`) REFERENCES `Items`(`id`);
+
+ALTER TABLE `Cart` ADD CONSTRAINT `Cart_fk0` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`);
+
+ALTER TABLE `Cart_items` ADD CONSTRAINT `Cart_items_fk0` FOREIGN KEY (`items_id`) REFERENCES `Items`(`id`);
+
+ALTER TABLE `Cart_items` ADD CONSTRAINT `Cart_items_fk1` FOREIGN KEY (`cart_id`) REFERENCES `Cart`(`id`);
+

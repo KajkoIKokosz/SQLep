@@ -4,9 +4,10 @@
  *
  * @author KajkoIKokosz
  */
+require_once './DBConnection.php';
 
 class Item {
-    static private $conn;
+    private $conn;
     private $id;
     private $itemName;
     private $description;
@@ -21,13 +22,10 @@ class Item {
              ->setPrice($price)
              ->setQuantity($qantity);
     }
+   
     
     //setery
-    
-    public static function setConnection($newConnection){
-        self::$conn = $newConnection;
-    }
-    
+   
     private function setId($id){
         if (is_integer($id)) {
             $this->id = $id;
@@ -123,25 +121,46 @@ class Item {
     } // koniec funkcji sellItem
     
     public function saveToDb(){
-        if ( $this->id != -1 ) {
-            $statement = "INSERT INTO `items`(`Item_name`, `Description`, `Price`, `Quantity`) VALUES (?, ?, ?, ?))";
+        $this->conn = getConnection();
+        if ( $this->id == -1 ) {
+            $statement = $this->conn->prepare("INSERT INTO `items`(`Item_name`, `Description`, `Price`, `Quantity`) VALUES (?, ?, ?, ?)");
             
-            $statement->bind_param('ssdi',
-                $this->getItemName(),
-                $this->getDescription(),
-                $this->getPrice,
-                $this->getQuantity);
+            if ($statement) {
+                $statement->bind_param(
+                    'ssdi',
+                    $this->getItemName(),
+                    $this->getItemDescription(),
+                    $this->getItemPrice(),
+                    $this->getItemQuantity()
+                );
+            } else {echo "błąd utworzenia statement";}
             
-            if ($statement->execute()){
-                $this->id = $conn->insert_id;
-                print_r($this);
+            if ( $statement->execute() ){
+                $this->setId($this->conn->insert_id);
+                echo "produkt {$this->getItemName()} został wprowadzony";
                 return true;
+            } else {
+                echo $statement->error;
             } // end of if ($statement->execute())
             
-        } {} // tu będzie edycja item'u
+        } else { // if id != -1
+            $statement = $this->conn->prepare("UPDATE `items` SET `Item_name`=?,`Description`=?,`Price`=?,`Quantity`=? WHERE id = $this->id");
+            if ( $statement ) {
+                $statement->bind_param('ssdi', $this->getItemName(), $this->getItemDescription(), $this->getItemPrice(), $this->getCategory());
+            }
+            $insertId = $this->getItemId(); // dlaczego nie mogę pozyskać tego id wewnątrz if ( $statement->execute() ){
+            if ( $statement->execute() ){
+                $this->setId($this->conn->insert_id);
+                echo "produkt {$this->getItemName()} o id $insertId został zmodyfikowany";
+                return true;
+            } else {
+                echo "Nie udało się zmodyfikować przedmiotu o id $insertId, $statement->error";
+            } // end of if ($statement->execute())
+        }
     } // koniec saveToDb
+
     
-}
+} // koniec klasy
 
 
 
