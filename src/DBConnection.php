@@ -13,11 +13,16 @@ function getConnection() {
         "dbName" => "SQLep"
     ];
     
-    $conn = new mysqli($dbConnectParam['hostName'], $dbConnectParam['userName'], $dbConnectParam['password'], $dbConnectParam['dbName']);
+    $conn = new mysqli(
+            $dbConnectParam['hostName'],
+            $dbConnectParam['userName'],
+            $dbConnectParam['password'],
+            $dbConnectParam['dbName']
+            );
     if ($conn->connect_error) {
         die("Polaczenie nieudane. Blad: " . $conn->connect_error."<br>");
     } else {
-        echo "udało się ustanowić połączenie";
+        echo "udało się ustanowić połączenie<br>";
         return $conn;
     }
 }

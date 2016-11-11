@@ -1,4 +1,10 @@
 <?php
+/**
+ * Description of ItemTests
+ *
+ * @author KajkoIKokosz
+ */
+
 require_once './DBConnection.php';
 
 class User {
@@ -8,7 +14,7 @@ class User {
     private $email;
     private $shippingAddres;
     private $hashedPassword;
-    private $conn;
+    
     
     public function __construct($name, $surname, $email, $shippingAddres, $userPassword) {
         $this->id = -1;
@@ -16,19 +22,11 @@ class User {
              ->setSurname($surname)
              ->setEmail($email)
              ->setShippingAddres($shippingAddres)
-             ->setPassword($userPassword);
-        
-        $this->conn = getConnection();
+             ->setPassword($userPassword); 
     }
     
-    public function __destruct() {
-        $this->conn->close();
-    }
-    
-    
-        //setery
-   
-    private function setId($id){
+    //setery
+    public function setId($id){
         if (is_integer($id)) {
             $this->id = $id;
         } else {
@@ -80,5 +78,70 @@ class User {
             return $this;
         } // setPassword end 
     }
+    
+    // getery
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getSurname() { return $this->surname; }
+    public function getEmail() { return $this->email; }
+    public function getShippingAddres() { return $this->shippingAddres; }
+    public function getHashedPassword() { return $this->hashedPassword; }
+    
+    public function saveToDB(){
+        $conn = getConnection();
+        if($this->id == -1) {
+            $statement = $conn->prepare("INSERT INTO `users` 
+                (Name, Surname, email, shipping_addres, hashed_password) 
+                VALUES (?, ?, ?, ?, ?)");
+            
+            if ($statement) {
+                $statement->bind_param('sssss',
+                    $this->name,
+                    $this->surname,
+                    $this->email,
+                    $this->shippingAddres,
+                    $this->hashedPassword
+                );
+            } else {
+                echo "błąd utworzenia statement";
+            }
+            
+            if ($statement->execute()){
+                $this->id = $conn->insert_id;
+                // print_r($this);
+                echo "wprowadzono poprawnie użytkownika<br>";
+                return true;
+            } // end of if ($statement->execute())
+        } else {// if($this->id != -1) 
+            $statement = $conn->prepare("UPDATE `users` SET
+                Name = ?,
+                Surname = ?,
+                email = ?,
+                shipping_addres = ?,
+                hashed_password = ?
+                WHERE id = $this->id"
+            );
+            
+           if ($statement) {
+                $statement->bind_param('sssss',
+                    $this->name,
+                    $this->surname,
+                    $this->email,
+                    $this->shippingAddres,
+                    $this->hashedPassword
+                );
+            } else {
+                echo "błąd utworzenia statement";
+            }
+            
+            if ( $statement->execute() ) {
+                echo "dane użytkownika zostały poprawnie zmodyfikowane<br>";
+                //print_r($this);
+                return true;
+            } else {
+                echo "błąd wykonania statement: ". $statement->error;
+            }
+        }
+    } // saveToDB function end
     
 } // koniec klasy
