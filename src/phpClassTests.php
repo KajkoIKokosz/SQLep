@@ -16,6 +16,6 @@ require './User.php';
 //$itemTestObject->saveToDb();
 
 // T E S T   d o d a w a n i a   o r a z    e d y c j i   U s e r a 
-$newUser = new User("Adam", "Morświn", "adam@morswin.pl", "Arktyczna 70, Longeberen", "adammorswin");
-$newUser->setId(2);
-$newUser->saveToDB();
+//$newUser = new User("Adam", "Morświn", "adam@morswin.pl", "Arktyczna 70, Longeberen", "adammorswin");
+//$newUser->setId(2);
+//$newUser->saveToDB();

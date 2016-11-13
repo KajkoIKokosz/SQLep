@@ -118,6 +118,18 @@ class Item {
         }
     } // koniec funkcji sellItem
     
+    public function addImg($image) {
+        if ( $this->id != -1 ) {
+            $path = "../img/item_pict/".$this->id;
+            if ( !is_dir($path) ) {
+                mkdir($path, 777, TRUE);
+            }
+            move_uploaded_file( $_FILES['upload_file']['tmp_name'], $path."/$this->itemName.jpg");
+        } else {
+            echo "Nie można dodać zdjęcia. Dodaj wpierw produkt do bazy.";
+        }
+    }
+    
 public function saveToDb(){
         $conn = getConnection();
         if ( $this->id == -1 ) {
